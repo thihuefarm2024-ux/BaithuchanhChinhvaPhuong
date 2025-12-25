@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Thực Hành Tin 12 - Cánh Diều</title>
+    <style>
+/* Hiệu ứng Sticker Bong Bóng ẩn phía sau */
+.bubble-sticker {
+    position: fixed;
+    bottom: -150px;
+    z-index: -1; /* Đưa ra phía sau cùng */
+    pointer-events: none;
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.15));
+    border: 4px solid white;
+    border-radius: 15px;
+    animation: floatUp var(--duration) linear infinite;
+    opacity: 0;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) rotate(0deg) translateX(0);
+        opacity: 0;
+    }
+    10% { opacity: 0.8; } /* Hơi trong suốt một chút cho nhẹ nhàng */
+    90% { opacity: 0.8; }
+    100% {
+        transform: translateY(-120vh) rotate(var(--rotation)) translateX(var(--drift));
+        opacity: 0;
+    }
+}
+        /* 1. ĐỊNH NGHĨA MÀU SẮC & CƠ BẢN */
+        :root {
+            --soft-white: #ffffff;
+            --accent-pink: #e8d3d1;
+            --text-color: #5d5454;
+            --header-pink: #b5838d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(255, 192, 203, 0.6) 0px, transparent 50%),
+                radial-gradient(at 50% 10%, rgba(255, 240, 245, 0.8) 0px, transparent 40%),
+                radial-gradient(at 100% 20%, rgba(255, 228, 225, 0.7) 0px, transparent 50%),
+                radial-gradient(at 15% 60%, rgba(255, 218, 185, 0.4) 0px, transparent 45%),
+                radial-gradient(at 80% 50%, rgba(255, 182, 193, 0.5) 0px, transparent 50%),
+                radial-gradient(at 40% 90%, rgba(255, 239, 213, 0.6) 0px, transparent 50%),
+                radial-gradient(at 90% 95%, rgba(255, 228, 225, 0.8) 0px, transparent 40%);
+            background-attachment: fixed;
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            transition: all 0.5s ease;
+        }
+        body {
+    background: linear-gradient(-45deg, #ffc0cb, #e8d3d1, #f4d03f, #16a085);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite; /* Nền chuyển động đổi màu rực rỡ */
+    color: var(--text-color);
+    line-height: 1.6;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Hiệu ứng lưới đè lên trên để trông chuyên nghiệp hơn */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: radial-gradient(rgba(0,0,0,0.1) 1px, transparent 1px);
+    background-size: 25px 25px;
+    z-index: -1;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Họa tiết hình học gây chú ý mạnh */
+.decorative-shape {
+    position: fixed;
+    z-index: -1;
+    opacity: 0.6;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
+    animation: floatShape 8s infinite alternate ease-in-out;
+}
+
+@keyframes floatShape {
+    from { transform: translateY(0) rotate(0deg); }
+    to { transform: translateY(-40px) rotate(20deg); }
+}
+
+/* Cụ thể từng hình */
+.blob-1 { top: 10%; left: -5%; width: 200px; height: 200px; background: #b5838d; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+.blob-2 { bottom: 10%; right: -5%; width: 250px; height: 250px; background: #f39c12; border-radius: 50% 50% 20% 80% / 25% 80% 20% 75%; animation-delay: -2s; }
+.zigzag { top: 40%; right: 10%; width: 100px; opacity: 0.3; }
+        /* 2. PHẦN ĐẦU (HEADER) */
+        header {
+            background: rgba(255, 255, 255, 0.6); 
+            backdrop-filter: blur(5px);
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--accent-pink);
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: var(--header-pink);
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* 3. BỐ CỤC CHÍNH */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 4. MENU CHÍNH */
+        .grid-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 40px 20px;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid var(--accent-pink);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(232, 211, 209, 0.3);
+        }
+
+        .option-card:hover {
+            background: var(--accent-pink);
+            transform: translateY(-5px);
+            color: white;
+        }
+
+        /* 5. PHẦN NỘI DUNG CHI TIẾT */
+        .content-section {
+            display: none; 
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section h2 {
+            color: var(--header-pink);
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--accent-pink);
+            padding-bottom: 10px;
+        }
+
+        .content-section h3 {
+            margin-top: 25px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .img-container {
+            text-align: center;
+            margin: 20px 0;
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px dashed var(--header-pink);
+        }
+
+        .img-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .img-caption {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            font-style: italic;
+            color: #777;
+        }
+
+        .content-section ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        /* Style bổ sung cho các ví dụ */
+        .example-block {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .active {
+            display: block !important;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 25px;
+            background: var(--header-pink);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            cursor: pointer;
+            border: none;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #a0727a;
+        }
+
+        code {
+            background: #fdf2f2;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #d63384;
+        }
+
+        @media (max-width: 600px) {
+            .grid-menu { grid-template-columns: 1fr; }
+        }
+        /* Đảm bảo danh sách có khoảng cách lề trái để hiện số/chữ và thụt lùi */
+.example-block ol {
+    margin-left: 30px; 
+    padding-left: 10px;
+}
+
+/* Tăng mức độ thụt lùi cho các danh sách con cấp thấp hơn */
+.example-block li > ol {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+    </style>
+</head>
+<body>
+<div class="decorative-shape blob-1"></div>
+<div class="decorative-shape blob-2"></div>
+<svg class="decorative-shape zigzag" viewBox="0 0 100 20">
+    <polyline points="0,20 10,0 20,20 30,0 40,20 50,0 60,20 70,0 80,20 90,0 100,20" fill="none" stroke="#b5838d" stroke-width="5"/>
+</svg>
+    <header>
+        <h1>Bài Thực Hành Của Chính Và Phương</h1>
+        <h3>Chủ đề F: Tạo Trang Web </h3>
+    </header>
+
+    <div class="container">
+        
+        <div id="home-menu" class="grid-menu active">
+            <div class="option-card" onclick="showContent('page1')">
+                <h3>Bài 1: Làm quen với ngôn ngữ HTML</h3>
+            </div>
+            <div class="option-card" onclick="showContent('page2')">
+                <h3>Bài 2 và 3: Định dạng văn bản và tạo siêu liên kết và Thực hành</h3>
+            </div>
+            <div class="option-card" onclick="showContent('page4')">
+                <h3>Bài 4: Danh sách & Bảng biểu</h3>
+            </div>
+            <div class="option-card" onclick="showContent('page5')">
+                <h3>Bài 5: Đa phương tiện & Sử dụng khung</h3>
+            </div>
+            <div class="option-card" onclick="showContent('page6')">
+                <h3>Bài 6 và 7: Tạo biểu mẫu (Form) và Thực hành</h3>
+            </div>
+            <div class="option-card" onclick="showContent('page8')">
+                <h3>Bài 8 và 9: Làm quen với CSS và Thực hành </h3>
+            </div>
+            <div class="option-card" onclick="showContent('page10')">
+                <h3>Bài 10: Bộ chọn lớp và bộ chọn định danh</h3>
+            </div>
+            <div class="option-card" onclick="showContent('page11')">
+                <h3>Bài 11: Mô hình hộp và bố cục trang web</h3>
+            </div>
+        </div>
+
+        <div id="page1" class="content-section">
+            <h2>Bài 1: Làm quen với ngôn ngữ đánh dấu siêu văn bản</h2>
+            <p>HTML (HyperText Markup Language) là ngôn ngữ dùng để mô tả cấu trúc và nội dung trang web thông qua các thẻ.</p>
+            
+            <h3>1. Cấu trúc của một phần tử HTML</h3>
+            <p>Một phần tử cơ bản thường bao gồm thẻ mở, nội dung và thẻ đóng.</p>
+            <div class="img-container">
+                <img src="Screenshot_19-12-2025_20235_.jpg" alt="Cấu trúc phần tử HTML">
+                <span class="img-caption">Minh họa thẻ mở, nội dung và thẻ đóng</span>
+            </div>
+
+            <h3>2. Thuộc tính của phần tử</h3>
+            <p>Các thuộc tính cung cấp thêm thông tin cho phần tử và luôn nằm trong thẻ mở.</p>
+            <div class="img-container">
+                <img src="Screenshot_19-12-2025_202326_.jpg" alt="Thuộc tính trong HTML">
+                <span class="img-caption">Ví dụ về thuộc tính href và target trong thẻ siêu liên kết</span>
+            </div>
+
+            <h3>3. Cấu trúc tổng quát của một văn bản HTML</h3>
+            <div class="img-container">
+                <img src="Screenshot_19-12-2025_202345_.jpg" alt="Cấu trúc văn bản HTML">
+                <span class="img-caption">Sơ đồ cấu trúc chuẩn của một trang web HTML5</span>
+            </div>
+
+            <ul>
+                <li><code>&lt;!DOCTYPE html&gt;</code>: Khai báo tài liệu chuẩn HTML5.</li>
+                <li><code>&lt;html&gt;</code>: Thẻ bao quanh toàn bộ nội dung trang web.</li>
+                <li><code>&lt;head&gt;</code>: Chứa các thông tin bổ trợ như tiêu đề trang, bảng mã kí tự (utf-8).</li>
+                <li><code>&lt;body&gt;</code>: Chứa toàn bộ nội dung hiển thị trên trình duyệt.</li>
+            </ul>
+            
+            <button class="back-btn" onclick="showHome()">Quay lại</button>
+        </div>
+
+       <div id="page2" class="content-section">
+            <h2>Bài 2: Định dạng văn bản và tạo siêu liên kết </h2>
+            
+            <h3>1. Định dạng văn bản:</h3>
+            <p>Các thẻ định dạng giúp thay đổi cách hiển thị của văn bản trên trang web.</p>
+            
+            <div class="img-container">
+                <img src="Screenshot_19-12-2025_202732_.jpg" alt="Cấu trúc tiêu đề mục">
+                <span class="img-caption">Cú pháp chung của thẻ tiêu đề mục</span>
+            </div>
+
+            <div class="img-container">
+                <img src="Screenshot_19-12-2025_202752_.jpg" alt="Các cấp độ tiêu đề">
+                <span class="img-caption">Minh họa các cấp độ tiêu đề từ h1 đến h6 trong tài liệu HTML</span>
+            </div>
+
+            <ul>
+                <li><code>&lt;p&gt;</code>: Định dạng một đoạn văn bản.</li>
+            </ul>
+            <div class="img-container">
+                <img src="Screenshot_19-12-2025_202717_.jpg" alt="Thẻ đoạn văn">
+                <span class="img-caption">Cách sử dụng thẻ p để tạo đoạn văn</span>
+            </div>
+
+            <p>Ngoài ra, có thể sử dụng các thẻ đặc biệt để nhấn mạnh nội dung:</p>
+            <div class="img-container">
+                <img src="Screenshot_19-12-2025_20282_.jpg" alt="Bảng các thẻ định dạng">
+                <span class="img-caption">Bảng tổng hợp các thẻ strong, em và mark</span>
+            </div>
+
+            <ul>
+                <li><code>&lt;strong&gt;</code>: In đậm nội dung quan trọng.</li>
+                <li><code>&lt;em&gt;</code>: In nghiêng nội dung cần nhấn mạnh hoặc thuật ngữ.</li>
+                <li><code>&lt;mark&gt;</code>: Tô màu nền (thường là màu vàng) để làm nổi bật.</li>
+            </ul>
+
+            <h3>2. Tạo siêu liên kết:</h3>
+            <p>Sử dụng thẻ <code>&lt;a&gt;</code> với thuộc tính <code>href</code> để dẫn người dùng tới địa chỉ khác.</p>
+            <div class="img-container">
+                <img src="Screenshot_19-12-2025_202821_.jpg" alt="Cú pháp thẻ a">
+                <span class="img-caption">Cấu trúc thẻ siêu liên kết với thuộc tính href</span>
+            </div>
+            
+            <p>Ví dụ: <code>&lt;a href="https://google.com"&gt;Đến Google&lt;/a&gt;</code></p>
+
+            <hr>
+            <h2>Bài 3. Bài thực hành định dạng văn bản và tạo siêu liên kết</h2>
+
+            <div class="example-block"> 
+                <em><h2>Nhiệm vụ 1: Tạo tiêu đề mục cho trang web (Trang 46)</h2></em>
+                <h1>Trang web cá nhân của Nguyễn Thanh Uyên</h1>
+                <h2>Thông tin cá nhân</h2>
+                <h2>Sở thích</h2>
+            </div>
+
+            <div class="example-block">
+                <em><h2>Nhiệm vụ 2: Làm nổi bật cho trang web (Trang 47)</h2></em>
+                <h1>Trang web cá nhân của Nguyễn Thanh Uyên</h1>
+                <h2>Thông tin cá nhân</h2>
+                <p>Họ và tên: Nguyễn Thanh Uyên</p>
+                <p>Sinh năm: 2007</p>
+                <p>Quê quán: Hà Nội</p>
+                <h2>Sở thích</h2>
+                <p>Đọc sách: <em>Các tác phẩm của nhà văn Nguyễn Nhật Ánh</em></p>
+                <p>Thể thao: <em>Chơi bóng chuyền, Chơi cầu lông</em></p>
+            </div>
+
+            <div class="example-block">
+                <em><h2>Nhiệm vụ 3: Tạo siêu liên kết (Trang 48)</h2></em>
+                <h1>Trang web cá nhân của Nguyễn Thanh Uyên</h1>
+                <h2>Thông tin cá nhân</h2>
+                <p>Họ và tên: Nguyễn Thanh Uyên</p>
+                <p>Sinh năm: 2007</p>
+                <p>Quê quán: <a href="https://www.hanoi.gov.vn/">Hà Nội</a></p>
+                <h2>Sở thích</h2>
+                <p>Đọc sách: <em>Các tác phẩm của nhà văn Nguyễn Nhật Ánh</em></p>
+                <p>Thể thao: <em>Chơi bóng chuyền, Chơi cầu lông</em></p>
+            </div>
+            
+            <button class="back-btn" onclick="showHome()">Quay lại</button>
+        </div>
+
+      <div id="page4" class="content-section">
+            <h2>Bài 4: Trình bày nội dung theo dạng danh sách, bảng biểu</h2>
+            
+            <h3>1. Danh sách:</h3>
+            <ul>
+                <li>Danh sách không thứ tự (dấu chấm): <code>&lt;ul&gt;</code> và <code>&lt;li&gt;</code>.</li>
+                <li>Danh sách có thứ tự (số): <code>&lt;ol&gt;</code> và <code>&lt;li&gt;</code>.</li>
+            </ul>
+
+            <div class="img-container">
+                <img src="Screenshot_20-12-2025_174412_.jpg" alt="Cấu trúc danh sách có thứ tự">
+                <span class="img-caption">Cú pháp thẻ ol và li để tạo danh sách có thứ tự</span>
+            </div>
+
+            <p>Sử dụng thuộc tính <code>type</code> trong thẻ <code>&lt;ol&gt;</code> để thay đổi kiểu đánh số:</p>
+            <div class="img-container">
+                <img src="Screenshot_20-12-2025_174432_.jpg" alt="Các giá trị thuộc tính type">
+                <span class="img-caption">Bảng các giá trị xác định thứ tự trong danh sách</span>
+            </div>
+
+            <div class="example-block">
+                <em><h2>Nhiệm vụ 1: Thực hành tạo danh sách, tạo bảng</h2></em>
+                <p>Danh sách các trường đại học Việt Bách cân nhắc dự tuyển</p>
+                <ol type="I">
+                    <li>Các trường Kĩ thuật - Công nghệ
+                        <ol type="a">
+                            <li>Đại học Bách khoa Hà Nội</li>
+                            <li>Trường Đại học Công nghệ, ĐHQGHN</li>
+                        </ol>
+                    </li>
+                    <li>Các trường Kinh tế
+                        <ol type="a" start="3">
+                            <li>Trường Đại học Kinh tế Quốc dân</li>
+                            <li>Trường Đại học Ngoại thương</li>
+                        </ol>
+                    </li>
+                    <li>Các trường Quân đội - Công an
+                        <ol type="a" start="5">
+                            <li>Học viện Kĩ thuật Quân sự</li>
+                            <li>Học viện An ninh nhân dân</li>
+                        </ol>
+                    </li>
+                </ol>
+            </div>
+
+            <h3>2. Bảng biểu (Table):</h3>
+            <ul>
+                <li><code>&lt;table&gt;</code>: Khai báo bảng.</li>
+                <li><code>&lt;tr&gt;</code>: Khai báo một hàng (row).</li>
+                <li><code>&lt;th&gt;</code>: Ô tiêu đề cột (thường in đậm).</li>
+                <li><code>&lt;td&gt;</code>: Ô nội dung dữ liệu.</li>
+            </ul>
+
+            <div class="img-container">
+                <img src="Screenshot_20-12-2025_174441_.jpg" alt="Cấu trúc bảng">
+                <span class="img-caption">Minh họa cấu trúc thẻ table, tr và td</span>
+            </div>
+
+            <div class="example-block">
+                <em><h2>Nhiệm vụ 2: Thực hành tạo bảng </h2></em>
+                <table border="1" style="width:100%; border-collapse: collapse; text-align: center;">
+                    <caption style="margin-bottom: 10px; font-weight: bold;">Thống kê số lượng học sinh lớp 12A1 tham gia hoạt động thể thao của trường</caption>
+                    <tr style="background-color: #fdf2f2;">
+                        <th>Nội dung</th>
+                        <th>Nam</th>
+                        <th>Nữ</th>
+                    </tr>
+                    <tr>
+                        <td>Bóng bàn</td>
+                        <td>10</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>Cờ vua</td>
+                        <td>8</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>Chạy cự li ngắn</td>
+                        <td>15</td>
+                        <td>6</td>
+                    </tr>
+                </table>
+            </div>
+
+            <button class="back-btn" onclick="showHome()">Quay lại</button>
+        </div>
+<div id="page5" class="content-section">
+            <h2>Bài 5: Chèn hình ảnh, âm thanh, video và sử dụng khung</h2>
+            
+            <h3>1. Chèn hình ảnh:</h3>
+            <p>Sử dụng thẻ <code>&lt;img&gt;</code> để chèn hình ảnh vào trang web.</p>
+            <div class="img-container">
+                <img src="Screenshot_20-12-2025_181710_.jpg" alt="Cú pháp thẻ img">
+                <span class="img-caption">Cú pháp thẻ img với các thuộc tính src, alt, width và height</span>
+            </div>
+
+            <div class="example-block">
+                <em><h2> Nhiệm vụ 1: Chèn hình ảnh Văn Miếu</h2></em>
+                <div style="text-align: center; border: 1px dashed #ccc; padding: 10px;">
+                    <img src="vanmieu.jpg" alt="Văn Miếu Quốc Tử Giám" style="width: 80%; max-width: 400px; border-radius: 5px;">
+                </div>
+            </div>
+
+            <h3>2. Chèn âm thanh:</h3>
+            <div class="img-container">
+                <img src="Screenshot_20-12-2025_181725_.jpg" alt="Cú pháp thẻ audio">
+            </div>
+
+            <div class="example-block">
+                <em><h2>Nhiệm vụ 2: Nghe nhạc "Pin Dự Phòng" (Dương Domic)</h2></em>
+                <audio src="pinduphong.mp3" controls style="width: 100%; margin-top: 10px;"></audio>
+            </div>
+
+            <h3>3. Chèn video:</h3>
+            <p>Sử dụng thẻ <code>&lt;video&gt;</code> kèm thuộc tính <code>controls</code> để xem video trên trình duyệt.</p>
+            <div class="img-container">
+                <img src="Screenshot_20-12-2025_181749_.jpg" alt="Cú pháp thẻ video">
+                <span class="img-caption">Cú pháp thẻ video với thuộc tính src và controls</span>
+            </div>
+
+            <div class="example-block">
+                <h4> Chèn Video minh họa</h4>
+                <div style="background: #000; padding: 10px; border-radius: 8px; text-align: center;">
+                    <video src="video_cua_ban.mp4" controls style="width: 100%; max-height: 300px;">
+                        Trình duyệt của bạn không hỗ trợ phát video.
+                    </video>
+                </div>
+            </div>
+
+            <h3>4. Sử dụng khung (Iframe):</h3>
+            <div class="img-container">
+                <img src="Screenshot_20-12-2025_18189_.jpg" alt="Cú pháp thẻ iframe">
+            </div>
+
+            <div class="example-block">
+                <em><h2>Nhiệm vụ 3: Nhúng tệp bằng Iframe</h2></em>
+                <div style="border: 2px solid #b5838d; border-radius: 5px; overflow: hidden;">
+                    <iframe src="Bai4-NV2.html" width="100%" height="200" style="border:none;"></iframe>
+                </div>
+            </div>
+
+            <button class="back-btn" onclick="showHome()">Quay lại</button>
+        </div>       
+<div id="page6" class="content-section">
+            <h2>Bài 6: Tạo biểu mẫu (Form)</h2>
+            <p>Biểu mẫu được dùng để thu thập thông tin từ người dùng qua các ô nhập liệu.</p>
+            
+            <h3>1. Cấu trúc chung của Form</h3>
+            <p>Sử dụng thẻ <code>&lt;form&gt;</code> để bao quanh các điều khiển nhập dữ liệu.</p>
+            <div class="img-container">
+                <img src="Screenshot_20-12-2025_18568_.jpg" alt="Cấu trúc thẻ form">
+                <span class="img-caption">Cú pháp thẻ form với thuộc tính action và method</span>
+            </div>
+
+            <h3>2. Các thành phần nhập liệu cơ bản</h3>
+            <p><strong>Ô nhập văn bản (Text):</strong> Dùng để nhập dữ liệu ngắn như họ tên, địa chỉ.</p>
+            <div class="img-container">
+                <img src="Screenshot_20-12-2025_185615_.jpg" alt="Thẻ input text">
+                <span class="img-caption">Cú pháp thẻ input loại text</span>
+            </div>
+
+            <p><strong>Bảng tổng hợp một số phần tử khác:</strong></p>
+            <div class="img-container">
+                <img src="Screenshot_20-12-2025_185635_.jpg" alt="Bảng phần tử textarea, label, password">
+                <span class="img-caption">Mục đích và ví dụ của textarea, label và password</span>
+            </div>
+
+            <h3>3. Nút gửi dữ liệu (Submit)</h3>
+            <p>Dùng để gửi toàn bộ thông tin trong biểu mẫu về máy chủ xử lý.</p>
+            <div class="img-container">
+                <img src="Screenshot_20-12-2025_185651_.jpg" alt="Nút submit">
+                <span class="img-caption">Cú pháp tạo nút gửi dữ liệu (Submit button)</span>
+            </div>
+
+            <hr style="margin: 40px 0; border: 1px dashed var(--accent-pink);">
+
+            <h2>Bài 7: Thực hành tổng hợp tạo biểu mẫu</h2>
+
+            <div class="example-block">
+                <em><h2 style="color: var(--header-pink);">Nhiệm vụ 1: Tạo biểu mẫu có ô text nhập dữ liệu (Trang 65)</h2></em>s
+                <p>Yêu cầu: Soạn văn bản HTML để tạo biểu mẫu đóng góp ý kiến cho thư viện.</p>
+                <div style="background: #fff; padding: 20px; border: 1px solid #eee; border-radius: 8px; margin-top: 10px;">
+                    <h4 style="text-align: center;">Đóng góp ý kiến cho thư viện của nhà trường</h4>
+                    <form>
+                        <p><strong>1. Thông tin về người góp ý</strong></p>
+                        <label>Họ và tên: <input type="text" name="txtTen"></label><br>
+                        <label>Địa chỉ email: <input type="text" name="txtEmail"></label><br>
+                        
+                        <p><strong>2. Đóng góp ý kiến</strong></p>
+                        <label>Ý kiến đóng góp:<br>
+                            <textarea name="txtComment" rows="6" cols="40"></textarea>
+                        </label>
+                    </form>
+                </div>
+            </div>
+
+            <div class="example-block" style="margin-top: 30px;">
+                <h3 style="color: var(--header-pink);">Nhiệm vụ 2: Thêm các điều khiển lựa chọn và nút gửi (Trang 66)</h3>
+                <p>Yêu cầu: Thêm các nhóm checkbox và nút "Góp ý" vào biểu mẫu.</p>
+                <div style="background: #fff; padding: 20px; border: 1px solid #eee; border-radius: 8px; margin-top: 10px;">
+                        <p>Thể loại cần bổ sung thêm sách:</p>
+                        <input type="checkbox" name="chk1"> Truyện ngắn <br>
+                        <input type="checkbox" name="chk2"> Kĩ năng sống <br>
+                        <input type="checkbox" name="chk3"> Công nghệ thông tin <br>
+                        <input type="checkbox" name="chk4"> Truyện tranh <br>
+                        <input type="checkbox" name="chk5"> Lịch sử <br><br>
+                        <input type="submit" value="Góp ý" style="padding: 5px 20px; cursor: pointer;">
+                    </form>
+                </div>
+            </div>
+
+            <div class="example-block" style="margin-top: 30px;">
+                <em><h2 style="color: var(--header-pink);">Nhiệm vụ 3: Tạo Trang web phản hồi (Trang 67)</h2></em>
+                <p>Nội dung hiển thị khi người dùng nhấn nút gửi dữ liệu.</p>
+                <div style="background: #fff; padding: 20px; border: 1px solid #eee; border-radius: 8px; margin-top: 10px;">
+                <form action="Bai7-NV3.html">
+                    <h4 style="text-align: center;">Đóng góp ý kiến cho thư viện của nhà trường</h4>
+                        <p><strong>1. Thông tin về người góp ý</strong></p>
+                        <label>Họ và tên: <input type="text" name="txtTen"></label><br>
+                        <label>Địa chỉ email: <input type="text" name="txtEmail"></label><br>
+                        
+                        <p><strong>2. Đóng góp ý kiến</strong></p>
+                        <label>Ý kiến đóng góp:<br>
+                            <textarea name="txtComment" rows="6" cols="40"></textarea>
+                        </label>
+                        <p>Thể loại cần bổ sung thêm sách:</p>
+                        <input type="checkbox" name="chk1"> Truyện ngắn <br>
+                        <input type="checkbox" name="chk2"> Kĩ năng sống <br>
+                        <input type="checkbox" name="chk3"> Công nghệ thông tin <br>
+                        <input type="checkbox" name="chk4"> Truyện tranh <br>
+                        <input type="checkbox" name="chk5"> Lịch sử <br><br>
+                        <input type="submit" value="Góp ý" style="padding: 5px 20px; cursor: pointer;">
+                       
+                </form>
+                </div>
+            </div>
+
+            <button class="back-btn" onclick="showHome()">Quay lại</button>
+        </div>
+   <div id="page8" class="content-section">
+    <h2>Bài 8: Làm quen với CSS</h2>
+    <p>CSS (Cascading Style Sheets) là ngôn ngữ dùng để định dạng và trình bày giao diện của các phần tử được viết bằng HTML.</p>
+
+    <h3>1. Cấu trúc của một quy tắc CSS</h3>
+    <p>Cấu trúc tổng quát của một quy tắc CSS bao gồm tên bộ chọn và các khai báo thuộc tính nằm trong cặp dấu ngoặc nhọn.</p>
+    
+    <div class="img-container">
+        <img src="Screenshot_25-12-2025_195243_.jpg" alt="Cấu trúc quy tắc CSS">
+        <span class="img-caption">Cấu trúc: Tên_bộ_chọn_phần_tử {thuộc tính 1 : giá trị;...}</span>
+    </div>
+
+    <h3>2. Một số thuộc tính định dạng cơ bản</h3>
+    <p>Dưới đây là các thuộc tính quan trọng dùng để thay đổi diện mạo của văn bản, màu nền và khung viền:</p>
+
+    <div class="grid-menu" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 20px;">
+        <div style="background: #fff; padding: 15px; border-radius: 10px; border: 1px solid var(--accent-pink);">
+            <h4 style="color: var(--header-pink); margin-bottom: 10px;">Định dạng văn bản & Nền</h4>
+            <div class="img-container" style="border: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px;">
+                <img src="Screenshot_25-12-2025_195256_.jpg" alt="Màu chữ" style="height: 40px;">
+                <img src="Screenshot_25-12-2025_195746_.jpg" alt="Màu nền" style="height: 40px;">
+                <img src="Screenshot_25-12-2025_19534_.jpg" alt="Phông chữ" style="height: 40px;">
+                <img src="Screenshot_25-12-2025_195311_.jpg" alt="Kích thước chữ" style="height: 40px;">
+            </div>
+            <p style="font-size: 0.85rem; color: #777; text-align: center;">(color, background-color, font-family, font-size)</p>
+        </div>
+
+        <div style="background: #fff; padding: 15px; border-radius: 10px; border: 1px solid var(--accent-pink);">
+            <h4 style="color: var(--header-pink); margin-bottom: 10px;">Định dạng khung viền</h4>
+            <div class="img-container" style="border: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px;">
+                <img src="Screenshot_25-12-2025_195319_.jpg" alt="Kiểu viền" style="height: 40px;">
+                <img src="Screenshot_25-12-2025_195324_.jpg" alt="Màu viền" style="height: 40px;">
+            </div>
+            <p style="font-size: 0.85rem; color: #777; text-align: center;">(border-style, border-color)</p>
+        </div>
+    </div>
+         <section id="bai9">
+    <h2>Bài 9: Thực hành định dạng một số thuộc tính CSS</h2>
+    
+    <div class="task-container">
+        <em><h2>Nhiệm vụ 1: Khai báo và áp dụng định dạng external CSS (Trang 74)</h2></em>
+        <iframe src="BAI9-NV1.html" width="100%" height="400px" style="border:1px solid #ccc;"></iframe>
+    </div>
+
+    <div class="task-container" style="margin-top: 20px;">
+        <em><h2>Nhiệm vụ 2:Khai báo và áp dụng định dạng external CSS (Trang 75)</h2></em>
+        <iframe src="BAI9-NV2.html" width="100%" height="500px" style="border:1px solid #ccc;"></iframe>
+    </div>
+
+    <div class="task-container" style="margin-top: 20px;">
+        <em><h2>Nhiệm vụ 3: Áp dụng bảng định dạng external CSS cho văn bản HTML (Trang 76)</h2></em>
+        <iframe src="BAI9-NV3.html" width="100%" height="300px" style="border:1px solid #ccc;"></iframe>
+    </div>
+         </section>
+
+            <button class="back-btn" onclick="showHome()">Quay lại</button>
+        </div>
+    </div>
+    <div id="page10" class="content-section">
+    <h2>Bài 10: Bộ chọn lớp và bộ chọn định danh</h2>
+    <p>Trong CSS, ngoài việc chọn theo tên thẻ (như h1, p), chúng ta có thể sử dụng bộ chọn lớp (class) và định danh (id) để áp dụng định dạng linh hoạt hơn.</p>
+
+    <h3>1. Bộ chọn lớp (Class Selector)</h3>
+    <p>Dùng để định dạng cho một nhóm nhiều phần tử khác nhau trên cùng một trang web. Tên bộ chọn lớp bắt đầu bằng dấu chấm (<code>.</code>).</p>
+    
+    <div class="img-container">
+        <img src="Screenshot_25-12-2025_204448_.jpg" alt="Cú pháp bộ chọn lớp">
+        <span class="img-caption">Cú pháp tổng quát của bộ chọn lớp</span>
+    </div>
+
+    <p>Nếu bạn muốn chỉ áp dụng lớp đó cho một loại thẻ cụ thể (ví dụ chỉ dành cho thẻ p), ta sử dụng cú pháp kết hợp:</p>
+    <div class="img-container">
+        <img src="Screenshot_25-12-2025_204459_.jpg" alt="Bộ chọn lớp kết hợp phần tử">
+        <span class="img-caption">Cú pháp: Phần_tử.Tên_bộ_chọn_lớp</span>
+    </div>
+
+    <h3>2. Bộ chọn định danh (ID Selector)</h3>
+    <p>Dùng để định dạng cho <b>duy nhất một phần tử</b> cụ thể trên trang web. Tên bộ chọn định danh bắt đầu bằng dấu thăng (<code>#</code>).</p>
+    
+    <div class="img-container">
+        <img src="Screenshot_25-12-2025_204513_.jpg" alt="Cú pháp bộ chọn định danh">
+        <span class="img-caption">Cú pháp: #Tên_định_danh {thuộc tính: giá trị;}</span>
+    </div>
+    <section id="bai10">
+    <em><h2>Thực hành (Trang 79,80)</h2></em>
+    
+    <div class="task-container">
+        <h3>Nhiệm vụ 1: Sử dụng bộ chọn lớp (Trang 79)</h3>
+        <iframe src="BAI10-NV1.html" width="100%" height="450px" style="border:1px solid #ccc; border-radius: 8px;"></iframe>
+    </div>
+
+    <div class="task-container" style="margin-top: 30px;">
+        <h3>Nhiệm vụ 2: Sử dụng bộ định danh (Trang 80)</h3>
+        <iframe src="BAI10-NV2.html" width="100%" height="450px" style="border:1px solid #ccc; border-radius: 8px;"></iframe>
+    </div>
+    </section>
+    <button class="back-btn" onclick="showHome()">Quay lại</button>
+    </div>
+<div id="page11" class="content-section">
+    <h2>Bài 11: Mô hình hộp và bố cục trang web</h2>
+    <p>Mô hình hộp (Box Model) là khái niệm cơ bản trong CSS để xác định kích thước và cách sắp xếp các phần tử trên trang web.</p>
+
+    <h3>1. Thành phần của Mô hình hộp</h3>
+    <p>Mỗi phần tử được coi như một chiếc hộp bao gồm 4 lớp từ trong ra ngoài: Nội dung, Đệm, Viền và Lề.</p>
+
+    <div class="img-container">
+        <img src="Screenshot_25-12-2025_211956_.jpg" alt="Sơ đồ Box Model">
+        <span class="img-caption">Hình 11.1: Minh họa các lớp Content, Padding, Border, Margin</span>
+    </div>
+
+    <h3>2. Các thuộc tính CSS quan trọng</h3>
+    <p>Dưới đây là bảng tổng hợp các thuộc tính dùng để điều chỉnh kích thước và khoảng cách cho mô hình hộp:</p>
+
+    <div class="img-container">
+        <img src="Screenshot_25-12-2025_21203_.jpg" alt="Bảng thuộc tính CSS">
+        <span class="img-caption">Bảng mô tả các thuộc tính padding, border-style, margin, width, height</span>
+    </div>
+
+    <h3>3. Kiểu hiển thị phần tử (Display)</h3>
+    <p>Thuộc tính <code>display</code> xác định cách một hộp được hiển thị trên trang web. Hai giá trị phổ biến nhất là <code>inline</code> và <code>block</code>:</p>
+    
+    <div style="display: flex; gap: 20px; justify-content: center; margin: 20px 0;">
+        <div class="img-container" style="flex: 1;">
+            <img src="Screenshot_25-12-2025_212022_.jpg" alt="Display Inline">
+            <span class="img-caption">Phần tử hiển thị trên cùng một dòng</span>
+        </div>
+        <div class="img-container" style="flex: 1;">
+            <img src="Screenshot_25-12-2025_212014_.jpg" alt="Display Block">
+            <span class="img-caption">Phần tử chiếm toàn bộ chiều rộng và bắt đầu dòng mới</span>
+        </div>
+    </div>
+
+    <hr style="margin: 40px 0; border: 1px dashed var(--accent-pink);">
+
+    <h2>4. Bố cục trang web (Layout)</h2>
+    <p>Bố cục trang web là cách sắp xếp các thành phần như đầu trang, thân trang và chân trang sao cho hợp lý và thẩm mỹ.</p>
+    
+    <div class="img-container">
+        <img src="Screenshot_25-12-2025_212032_.jpg" alt="Ví dụ bố cục web">
+        <span class="img-caption">Hình 11.2: Ví dụ về các khu vực chức năng trên một trang web thực tế</span>
+    </div>
+
+    <button class="back-btn" onclick="showHome()">Quay lại</button>
+</div>
+    <script>
+        function showContent(id) {
+            document.getElementById('home-menu').classList.remove('active');
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function showHome() {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(s => s.classList.remove('active'));
+            document.getElementById('home-menu').classList.add('active');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+    const images = ['sticker1.jpg', 'sticker2.jpg']; 
+
+    function createBubble() {
+        const bubble = document.createElement('img');
+        bubble.src = images[Math.floor(Math.random() * images.length)];
+        bubble.className = 'bubble-sticker';
+
+        // Cấu hình ngẫu nhiên
+        const sidePos = Math.random() * 90; // Giới hạn từ 0-90% để không bị lấp sát mép
+        const size = Math.random() * 40 + 80; // Kích thước khoảng 80px - 120px
+        const duration = Math.random() * 6 + 10; // Bay chậm hơn (10s - 16s)
+        const drift = (Math.random() - 0.5) * 150; 
+        const rotation = (Math.random() - 0.5) * 60;
+        const delay = Math.random() * 8; // Rải rác thời gian xuất hiện
+
+        bubble.style.left = sidePos + '%';
+        bubble.style.width = size + 'px';
+        bubble.style.setProperty('--duration', duration + 's');
+        bubble.style.setProperty('--drift', drift + 'px');
+        bubble.style.setProperty('--rotation', rotation + 'deg');
+        bubble.style.animationDelay = delay + 's';
+
+        document.body.appendChild(bubble);
+    }
+
+    // Chỉ tạo ra 4 sticker để tránh bị rối mắt
+    for (let i = 0; i < 4; i++) {
+        createBubble();
+    }
+
+</script>
+</body>
+</html>
