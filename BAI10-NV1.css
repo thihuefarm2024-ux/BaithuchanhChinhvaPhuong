@@ -1,0 +1,27 @@
+/* Bộ chọn lớp blue khai báo màu chữ steelblue */
+.blue {
+    color: steelblue;
+}
+
+/* Bộ chọn lớp red khai báo màu chữ darkred */
+.red {
+    color: darkred;
+}
+
+/* Bộ chọn lớp orangered định dạng font Verdana, size 25px, màu chữ orangered */
+.orangered {
+    font-family: "Verdana";
+    font-size: 25px;
+    color: orangered;
+}
+
+/* Bộ chọn lớp yellow cho phần tử input để có màu nền vàng */
+input.yellow {
+    background-color: yellow;
+}
+
+/* Bộ chọn lớp blue cho phần tử input để có màu nền xanh, chữ trắng (nút bấm) */
+input.blue {
+    background-color: blue;
+    color: white;
+}

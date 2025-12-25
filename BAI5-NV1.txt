@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Bai5-NV1</title>
+</head>
+<body>
+    <h1>Giới thiệu Văn Miếu Quốc Tử Giám</h1>
+    <img src="vanmieu.jpg" alt="Văn Miếu Quốc Tử Giám" width="600">
+    <p>Văn Miếu – Quốc Tử Giám là quần thể di tích đa dạng và phong phú hàng đầu của thành phố Hà Nội.</p>
+</body>
+</html>
